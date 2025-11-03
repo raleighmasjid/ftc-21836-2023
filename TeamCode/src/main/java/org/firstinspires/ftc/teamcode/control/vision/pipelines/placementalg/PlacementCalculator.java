@@ -163,21 +163,8 @@ public final class PlacementCalculator {
                         Pixel p1 = new Pixel(pMosaic[1], ANYCOLOR);
                         Pixel p2 = new Pixel(pMosaic[2], ANYCOLOR);
 
-                        ArrayList<Pixel> supportPixels = getSupportPixels(pMosaic[1]);
-
-						for (Pixel l : getSupportPixels(pMosaic[2]))
-							if (!l.isIn(supportPixels))
-								supportPixels.add(l);
-
-						double scoreValue = 10 / supportPixels.size();
-
-						p1.scoreValue += scoreValue;
-						p2.scoreValue += scoreValue;
-
-						// System.out.println();
-						// System.out.println();
-						// for (Pixel l : supportPixels)
-						// System.out.println(l);
+                        p1.scoreValue += 10 * .5;
+                        p2.scoreValue += 10 * .5;
 
                         p1.mHelper = true;
                         p2.mHelper = true;
@@ -219,12 +206,12 @@ public final class PlacementCalculator {
         int c3 = (c1 + 2) % 3;
 
         if (colorsLeft[c2] >= 1 && colorsLeft[c3] >= 1) {
-            // colorsLeft[c2]--;
-            // colorsLeft[c3]--;
+            colorsLeft[c2]--;
+            colorsLeft[c3]--;
             p2.recommended = colors[c2];
             p3.recommended = colors[c3];
         } else if (colorsLeft[c1] >= 2) {
-            // colorsLeft[c1] -= 2;
+            colorsLeft[c1] -= 2;
             p2.recommended = p3.recommended = colors[c1];
         }
     }
@@ -242,22 +229,13 @@ public final class PlacementCalculator {
         Pixel.Color remainingColor = getRemainingColor(p1.color, p2.color);
         Pixel p3 = new Pixel(fillLoc, remainingColor);
         p3.recommended = remainingColor;
-
-        ArrayList<Pixel> supportPixels = getSupportPixels(fillLoc);
-
-        p3.scoreValue += 10 / supportPixels.size();
-
-        // System.out.println();
-        // System.out.println();
-        // for (Pixel l : supportPixels)
-        // System.out.println(l);
-
+        p3.scoreValue += 10;
         p3.mHelper = true;
         optimalPlacements.add(p3);
         colorsToGetSPixels.add(new Pixel(p3, EMPTY));
 
-        // int index = p3.color.ordinal();
-        // if (colorsLeft[index] >= 1) colorsLeft[index]--;
+        int index = p3.color.ordinal();
+        colorsLeft[index] = max(0, colorsLeft[index] - 1);
     }
 
     private boolean touchingAdjacentColor(Pixel pixel) {
